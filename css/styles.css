@@ -1,7 +1,7 @@
 :root {
   --bg-color: #000;
-  --text-color: #00ff88;
-  --accent: #00cc66;
+  --text-color: #ff5100;
+  --accent: #ff5100;
   --font-main: "Space Mono", monospace;
 }
 
@@ -9,7 +9,8 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100%;
@@ -43,6 +44,7 @@ html, body {
   color: var(--text-color);
   text-shadow: 0 0 15px var(--accent);
   margin: 0;
+  line-height: 0.8;
 }
 
 .subtitle {
@@ -66,17 +68,182 @@ canvas {
   right: 30px;
   font-size: 1.2rem;
   font-family: "Space Mono", monospace;
-  color: #00ff88;
+  color: rgb(255, 81, 0);
   background: rgba(0, 0, 0, 0.6);
   padding: 8px 16px;
   border-radius: 8px;
-  border: 1px solid #00ff88;
-  box-shadow: 0 0 8px #00ff88;
+  border: 1px solid #ff5100;
+  box-shadow: 0 0 8px #ff5100;
   z-index: 9;
   transition: opacity 0.3s ease;
 }
 
 #scoreDisplay.hidden {
   opacity: 0;
+  pointer-events: none;
+}
+
+/* Main container with CRT effect */
+.crt-container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+  padding: 20px;
+}
+
+/* Enhanced screen curvature effect */
+.crt-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(33, 33, 33, 0) 0%,
+    rgba(33, 33, 33, 0.3) 50%,
+    rgba(33, 33, 33, 0.7) 80%,
+    rgba(33, 33, 33, 0.9) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Scan lines */
+.crt-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+  background-size: 100% 4px;
+  z-index: 2;
+  pointer-events: none;
+  animation: flicker 0.15s infinite;
+}
+/* Flicker animation to simulate monitor instability */
+@keyframes flicker {
+  0% {
+    opacity: 0.97;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.98;
+  }
+}
+
+/* Static noise effect */
+.noise {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3QUcCgIZ6VmQnAAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAClElEQVRo3u2aTU8UQRCGH5zdFVlFQUEU/AiIHogHjY3xohcTL8ajJ/+J/8GfYOJRD+rFqAcjKopEV5Hv3RVFdllgMbs7WeKmk5nZnu2G2NVJ3sxOT3fX09VV1dUzMI1vRalvcJQsJBvS8uJ/JNPIE9tmTZljM22x3QMgqLYf8J3G9iyw0gWM0nkJnAee5AlIJjhIUUc+AE4Ch4DFLrMzCOwDdgOdOQPKPEfFAZ4F7gMPgQ6g3kVWADoVfMpU41VK1QrwGTjtEO4t8Ap4AwyMY9nzwAKwBVgErAW2ygeUtdVCGZKXgXfA0HiQJBBgCBgG3mqOTWFZGXQdO2NgV8T5feCLEg2OAQqAt8A14Aqw3kB0J/AY2OMsT3G/MeoRMQAm6U4q/GsKTz1ItJNAFmtODN8QcBvYNgG4dhCNdGlVWREV6dXgY4bbRgXQ6gCpVYDGNOaKkgKkdDYluA/qDlDV/M+AFWViPQ2YugJflCE/ZcRUB2eAVRbRZWA7cAj4OMJ+HeiXL+nQbyOi8cTWGPIaGpwT0m/MzAK9uj/H01J5nNI1AGzU/fca3BPSaWANsMnlAWRYpfT+XFmKu8aYjcpw1jk1ZYlPdWsF01eCGoBRMQNa55Y5nVUt4JMcz5OIzAQG/eOuBwxIQzPpd7RGnDSq4KcCr2mcfgIvgCdakw0Qc0pIGkxJgX5VoJvAU+BXAkxgJpVu4k2I0gMq11eB+8Ab+ZdxI9BtxJUmWnUVYY+KtvfA8TGWnTWRLpB8eaWb+gXgmMrALAGJHv/9Sc5KxZ3FEuGg5srTlIwg0V1BopdmVbQblSZapULpKtKvR64xnWl8B/4AY/mz1voUGboAAAAASUVORK5CYII=");
+  opacity: 0.07;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Turn on/off monitor effect - ONLY AT INITIALIZATION */
+@keyframes turn-on {
+  0% {
+    transform: scale(1, 0.8) translate3d(0, 0, 0);
+    filter: brightness(30);
+    opacity: 1;
+  }
+  3.5% {
+    transform: scale(1, 0.8) translate3d(0, 100%, 0);
+  }
+  3.6% {
+    transform: scale(1, 0.8) translate3d(0, -100%, 0);
+    opacity: 1;
+  }
+  9% {
+    transform: scale(1.3, 0.6) translate3d(0, 100%, 0);
+    filter: brightness(30);
+    opacity: 0;
+  }
+  11% {
+    transform: scale(1, 1) translate3d(0, 0, 0);
+    filter: contrast(0) brightness(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1, 1) translate3d(0, 0, 0);
+    filter: contrast(1) brightness(1.2) saturate(1.3);
+    opacity: 1;
+  }
+}
+
+/* Separate class for monitor initialization */
+.init-animation {
+  animation: turn-on 4s linear;
+  animation-fill-mode: forwards;
+}
+
+/* Rolling scan line effect */
+.scan-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 10px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(255, 81, 0, 0.2) 30%,
+    rgba(255, 81, 0, 0.3) 50%,
+    rgba(255, 81, 0, 0.2) 70%,
+    transparent 100%
+  );
+  z-index: 30;
+  opacity: 0.8;
+  pointer-events: none;
+  animation: roll 8s linear infinite;
+}
+
+@keyframes roll {
+  0% {
+    top: -10px;
+  }
+  100% {
+    top: 100%;
+  }
+}
+
+/* Content distortion when scan line passes */
+.distort-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 20; /* ahora por encima de las pantallas y textos */
+  pointer-events: none;
+  animation: distort-roll 8s linear infinite;
+}
+
+/* Pseudo-elemento que dibuja las rayas directamente sobre el contenido */
+.distort-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  /* Rayas finas verdes que se repiten, más opacas y visibles */
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 81, 0, 0.15) 0px,
+    rgba(255, 81, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+  mix-blend-mode: normal; /* sin mezcla, líneas directas sobre el contenido */
+  opacity: 1;
   pointer-events: none;
 }

@@ -1,36 +1,46 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>404 — Perdido en el Espacio</title>
-  <link rel="stylesheet" href="css/styles.css" />
-</head>
-<body>
-  
-  <!-- Pantalla inicial -->
-  <div class="overlay" id="startScreen">
-    <h1 class="title404">404</h1>
-    <p class="subtitle">
-      Has sido lanzado al espacio...<br />
-      Pulsa <strong>ENTER</strong> para iniciar la misión
-    </p>
-  </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>404 — Perdido en el Espacio</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <!-- Rolling scan line effect -->
+    <div class="distort-overlay"></div>
+    <div class="scan-line"></div>
+    <div class="noise"></div>
+    <div id="crtContainer" class="crt-container init-animation">
+      <!-- Distortion effect that follows the scan line -->
+      <div class="content"></div>
+      <!-- Pantalla inicial -->
+      <div class="overlay" id="startScreen">
+        <h1 class="title404">
+          ERROR
+          <div>404</div>
+        </h1>
+        <p class="subtitle">
+          Has sido lanzado al espacio...<br />
+          Pulsa <strong>ENTER</strong> para iniciar la misión
+        </p>
+      </div>
 
-  <!-- Pantalla de Game Over -->
-  <div class="overlay hidden" id="gameOverScreen">
-    <h1 class="title404">GAME OVER</h1>
-    <p class="subtitle">
-      Tu nave ha sido destruida.<br />
-      Pulsa <strong>ENTER</strong> para volver al inicio.
-    </p>
-  </div>
+      <!-- Pantalla de Game Over -->
+      <div class="overlay hidden" id="gameOverScreen">
+        <h1 class="title404">GAME OVER</h1>
+        <p class="subtitle">
+          Tu nave ha sido destruida.<br />
+          Pulsa <strong>ENTER</strong> para volver al inicio.
+        </p>
+      </div>
 
-  <canvas id="gameCanvas"></canvas>
+      <canvas id="gameCanvas"></canvas>
 
-  <!-- Contador de puntuación -->
-  <div id="scoreDisplay" class="hidden">Score: 0</div>
+      <!-- Contador de puntuación -->
+      <div id="scoreDisplay" class="hidden">Score: 0</div>
+    </div>
 
-  <script src="js/script.js"></script>
-</body>
+    <script src="js/script.js"></script>
+  </body>
 </html>
