@@ -1,39 +1,60 @@
-body {
+:root {
+  --bg-color: #000;
+  --text-color: #00ff88;
+  --accent: #00cc66;
+  --font-main: "Space Mono", monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
   margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg-color);
+  color: var(--text-color);
+  font-family: var(--font-main);
   overflow: hidden;
-  background: radial-gradient(circle at 50% 30%, #101018 0%, #000 100%);
-  color: white;
-  font-family: "Space Mono", monospace;
   text-align: center;
 }
 
+/* Pantalla inicial */
 .overlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at 50% 30%, #0a0a12 0%, #000 100%);
+  background: rgba(0, 0, 0, 0.95);
   z-index: 10;
+  transition: opacity 0.5s ease;
+}
+
+.overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .title404 {
-  font-size: 10rem;
-  color: #fff;
-  letter-spacing: 10px;
-  text-shadow: 0 0 20px #ff6666;
+  font-size: clamp(4rem, 20vw, 10rem);
+  color: var(--text-color);
+  text-shadow: 0 0 15px var(--accent);
   margin: 0;
 }
 
 .subtitle {
-  font-size: 1.2rem;
-  color: #bbb;
+  font-size: clamp(1rem, 3vw, 1.4rem);
+  color: var(--accent);
+  margin-top: 0.8rem;
 }
 
+/* Canvas del juego */
 canvas {
   display: block;
-  margin: 0 auto;
-  background: radial-gradient(circle at 50% 20%, #06060a, #000);
-  border: none;
+  width: 100%;
+  height: 100vh;
+  background: radial-gradient(circle at 50% 20%, #001100, #000);
 }

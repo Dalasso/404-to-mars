@@ -1,140 +1,164 @@
+// =====================
+// CONFIGURACIÓN BÁSICA
+// =====================
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const startScreen = document.getElementById("startScreen");
 
 let gameStarted = false;
+let frame = 0;
 let keys = {};
+let stars = [];
+let enemies = [];
+let bullets = [];
+let playerSpeed = 6;
+let startTime;
 
-// Jugador
+// Ajuste dinámico del canvas
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resize);
+resize();
+
+// =====================
+// ENTIDADES DEL JUEGO
+// =====================
 const player = {
-  x: canvas.width / 2 - 25,
+  x: canvas.width / 2 - 20,
   y: canvas.height - 80,
-  width: 50,
+  width: 40,
   height: 20,
-  color: "lime",
-  speed: 6
+  color: "#00ff88",
 };
 
-// Disparos
-let bullets = [];
-
-// Meteoritos
-let meteors = [];
-let meteorSpeed = 3;
-let spawnRate = 120; // cada 60 frames
-
-// Fondo animado
-let bgOffset = 0;
-
-// EVENTOS DE TECLADO
-document.addEventListener("keydown", e => {
+// =====================
+// CONTROLES
+// =====================
+window.addEventListener("keydown", (e) => {
   keys[e.code] = true;
-  if (!gameStarted && e.code === "Space") {
-    startScreen.style.display = "none";
-    gameStarted = true;
-  }
+  if (!gameStarted && e.code === "Enter") startGame();
 });
-document.addEventListener("keyup", e => {
-  keys[e.code] = false;
-});
+window.addEventListener("keyup", (e) => (keys[e.code] = false));
 
-// Crear un meteorito
-function createMeteor() {
-  const size = 20 + Math.random() * 30;
-  meteors.push({
-    x: Math.random() * (canvas.width - size),
-    y: -size,
-    width: size,
-    height: size,
-    color: "orange"
+function startGame() {
+  startScreen.classList.add("hidden");
+  gameStarted = true;
+  frame = 0;
+  playerSpeed = 2;
+  startTime = performance.now();
+  stars = [];
+  enemies = [];
+  bullets = [];
+  requestAnimationFrame(update);
+}
+
+// =====================
+// FUNCIONES AUXILIARES
+// =====================
+function createStar() {
+  stars.push({
+    x: Math.random() * canvas.width,
+    y: -5,
+    size: Math.random() * 2,
+    speed: 2 + Math.random() * 2,
   });
 }
 
-// Dibujar jugador
-function drawPlayer() {
-  ctx.fillStyle = player.color;
-  ctx.fillRect(player.x, player.y, player.width, player.height);
+function createEnemy() {
+  enemies.push({
+    x: Math.random() * (canvas.width - 30),
+    y: -30,
+    width: 30,
+    height: 20,
+    color: "#ff3333",
+    speed: 1 + Math.random() * 2,
+  });
 }
 
-// Dibujar balas
-function drawBullets() {
-  ctx.fillStyle = "yellow";
-  bullets.forEach(b => ctx.fillRect(b.x, b.y, b.width, b.height));
+function shoot() {
+  bullets.push({
+    x: player.x + player.width / 2 - 2,
+    y: player.y,
+    width: 4,
+    height: 10,
+    color: "#00ffcc",
+    speed: 8,
+  });
 }
 
-// Dibujar meteoritos
-function drawMeteors() {
-  ctx.fillStyle = "red";
-  meteors.forEach(m => ctx.fillRect(m.x, m.y, m.width, m.height));
-}
-
-// Actualizar lógica
-let frameCount = 0;
+// =====================
+// BUCLE PRINCIPAL
+// =====================
 function update() {
-  if (!gameStarted) return requestAnimationFrame(update);
+  if (!gameStarted) return;
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // Fondo desplazable
-  bgOffset += 2;
-  ctx.fillStyle = "#050510";
+  frame++;
+  ctx.fillStyle = "#000";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "#090918";
-  for (let i = 0; i < canvas.height / 20; i++) {
-    ctx.fillRect(0, (i * 20 + bgOffset) % canvas.height, canvas.width, 2);
-  }
 
-  // Movimiento jugador
-  if (keys["ArrowLeft"] && player.x > 0) player.x -= player.speed;
+  // === Fondo de estrellas ===
+  if (frame % 3 === 0) createStar();
+  ctx.fillStyle = "white";
+  stars.forEach((s) => (s.y += s.speed));
+  stars.forEach((s) => ctx.fillRect(s.x, s.y, s.size, s.size));
+  stars = stars.filter((s) => s.y < canvas.height);
+
+  // === Velocidad del jugador aumenta progresivamente ===
+  const elapsed = (performance.now() - startTime) / 1000;
+  playerSpeed = 2 + elapsed * 0.05;
+
+  // === Movimiento del jugador ===
+  if (keys["ArrowLeft"] && player.x > 0) player.x -= playerSpeed;
   if (keys["ArrowRight"] && player.x + player.width < canvas.width)
-    player.x += player.speed;
+    player.x += playerSpeed;
 
-  // Disparo
-  if (keys["Space"]) {
-    if (frameCount % 15 === 0) {
-      bullets.push({
-        x: player.x + player.width / 2 - 2,
-        y: player.y,
-        width: 4,
-        height: 10
-      });
-    }
-  }
+  // === Disparo ===
+  if (keys["Space"] && frame % 10 === 0) shoot();
 
-  // Mover balas
-  bullets.forEach(b => (b.y -= 10));
-  bullets = bullets.filter(b => b.y > -b.height);
+  // === Actualizar balas ===
+  bullets.forEach((b) => (b.y -= b.speed));
+  bullets = bullets.filter((b) => b.y > -b.height);
 
-  // Crear meteoritos
-  if (frameCount % spawnRate === 0) createMeteor();
+  // === Generar enemigos ===
+  if (frame % 60 === 0) createEnemy();
+  enemies.forEach((e) => (e.y += e.speed));
+  enemies = enemies.filter((e) => e.y < canvas.height);
 
-  // Mover meteoritos
-  meteors.forEach(m => (m.y += meteorSpeed));
-  meteors = meteors.filter(m => m.y < canvas.height + m.height);
-
-  // Colisiones bala-meteorito
-  bullets.forEach(b => {
-    meteors.forEach(m => {
+  // === Colisiones bala-enemigo ===
+  bullets.forEach((b) => {
+    enemies.forEach((e) => {
       if (
-        b.x < m.x + m.width &&
-        b.x + b.width > m.x &&
-        b.y < m.y + m.height &&
-        b.y + b.height > m.y
+        b.x < e.x + e.width &&
+        b.x + b.width > e.x &&
+        b.y < e.y + e.height &&
+        b.y + b.height > e.y
       ) {
-        m.y = canvas.height + 100; // “eliminar” meteorito
-        b.y = -100; // eliminar bala
+        e.hit = true;
+        b.remove = true;
       }
     });
   });
 
-  // Dibujar todo
-  drawPlayer();
-  drawBullets();
-  drawMeteors();
+  enemies = enemies.filter((e) => !e.hit);
+  bullets = bullets.filter((b) => !b.remove);
 
-  frameCount++;
+  // === Dibujar jugador ===
+  ctx.fillStyle = player.color;
+  ctx.fillRect(player.x, player.y, player.width, player.height);
+
+  // === Dibujar balas ===
+  bullets.forEach((b) => {
+    ctx.fillStyle = b.color;
+    ctx.fillRect(b.x, b.y, b.width, b.height);
+  });
+
+  // === Dibujar enemigos ===
+  enemies.forEach((e) => {
+    ctx.fillStyle = e.color;
+    ctx.fillRect(e.x, e.y, e.width, e.height);
+  });
+
   requestAnimationFrame(update);
 }
-
-update();
-ZZZ
