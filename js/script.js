@@ -3,18 +3,21 @@
 // =====================
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
+
 const startScreen = document.getElementById("startScreen");
+const gameOverScreen = document.getElementById("gameOverScreen");
 
 let gameStarted = false;
+let gameOver = false;
+
 let frame = 0;
 let keys = {};
 let stars = [];
 let enemies = [];
 let bullets = [];
-let playerSpeed = 6;
 let startTime;
 
-// Ajuste dinámico del canvas
+// Ajuste responsivo
 function resize() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -23,7 +26,7 @@ window.addEventListener("resize", resize);
 resize();
 
 // =====================
-// ENTIDADES DEL JUEGO
+// ENTIDADES
 // =====================
 const player = {
   x: canvas.width / 2 - 20,
@@ -31,6 +34,7 @@ const player = {
   width: 40,
   height: 20,
   color: "#00ff88",
+  speed: 6, // Velocidad fija del jugador
 };
 
 // =====================
@@ -38,24 +42,46 @@ const player = {
 // =====================
 window.addEventListener("keydown", (e) => {
   keys[e.code] = true;
-  if (!gameStarted && e.code === "Enter") startGame();
+
+  if (!gameStarted && !gameOver && e.code === "Enter") startGame();
+  else if (gameOver && e.code === "Enter") backToStart();
 });
+
 window.addEventListener("keyup", (e) => (keys[e.code] = false));
 
+// =====================
+// FUNCIONES DE ESTADO
+// =====================
 function startGame() {
   startScreen.classList.add("hidden");
+  gameOverScreen.classList.add("hidden");
   gameStarted = true;
+  gameOver = false;
+
   frame = 0;
-  playerSpeed = 2;
   startTime = performance.now();
   stars = [];
   enemies = [];
   bullets = [];
+
+  player.x = canvas.width / 2 - player.width / 2;
   requestAnimationFrame(update);
 }
 
+function triggerGameOver() {
+  gameStarted = false;
+  gameOver = true;
+  gameOverScreen.classList.remove("hidden");
+}
+
+function backToStart() {
+  gameOver = false;
+  startScreen.classList.remove("hidden");
+  gameOverScreen.classList.add("hidden");
+}
+
 // =====================
-// FUNCIONES AUXILIARES
+// CREACIÓN DE ENTIDADES
 // =====================
 function createStar() {
   stars.push({
@@ -73,7 +99,7 @@ function createEnemy() {
     width: 30,
     height: 20,
     color: "#ff3333",
-    speed: 1 + Math.random() * 2,
+    baseSpeed: 1.5 + Math.random(), // velocidad base
   });
 }
 
@@ -98,35 +124,34 @@ function update() {
   ctx.fillStyle = "#000";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // === Fondo de estrellas ===
+  // Fondo estrellado
   if (frame % 3 === 0) createStar();
   ctx.fillStyle = "white";
   stars.forEach((s) => (s.y += s.speed));
   stars.forEach((s) => ctx.fillRect(s.x, s.y, s.size, s.size));
   stars = stars.filter((s) => s.y < canvas.height);
 
-  // === Velocidad del jugador aumenta progresivamente ===
-  const elapsed = (performance.now() - startTime) / 1000;
-  playerSpeed = 2 + elapsed * 0.05;
-
-  // === Movimiento del jugador ===
-  if (keys["ArrowLeft"] && player.x > 0) player.x -= playerSpeed;
+  // Movimiento jugador
+  if (keys["ArrowLeft"] && player.x > 0) player.x -= player.speed;
   if (keys["ArrowRight"] && player.x + player.width < canvas.width)
-    player.x += playerSpeed;
+    player.x += player.speed;
 
-  // === Disparo ===
+  // Disparo
   if (keys["Space"] && frame % 10 === 0) shoot();
 
-  // === Actualizar balas ===
+  // Actualizar balas
   bullets.forEach((b) => (b.y -= b.speed));
   bullets = bullets.filter((b) => b.y > -b.height);
 
-  // === Generar enemigos ===
-  if (frame % 60 === 0) createEnemy();
-  enemies.forEach((e) => (e.y += e.speed));
-  enemies = enemies.filter((e) => e.y < canvas.height);
+  // Crear enemigos (uno cada 120 frames ≈ 2s)
+  if (frame % 120 === 0) createEnemy();
 
-  // === Colisiones bala-enemigo ===
+  // Enemigos se aceleran progresivamente con el tiempo
+  const elapsed = (performance.now() - startTime) / 1000;
+  const enemySpeedMultiplier = 1 + elapsed * 0.04;
+  enemies.forEach((e) => (e.y += e.baseSpeed * enemySpeedMultiplier));
+
+  // Colisión bala-enemigo
   bullets.forEach((b) => {
     enemies.forEach((e) => {
       if (
@@ -144,17 +169,30 @@ function update() {
   enemies = enemies.filter((e) => !e.hit);
   bullets = bullets.filter((b) => !b.remove);
 
-  // === Dibujar jugador ===
+  // Colisión jugador-enemigo → GAME OVER
+  for (const e of enemies) {
+    if (
+      e.x < player.x + player.width &&
+      e.x + e.width > player.x &&
+      e.y < player.y + player.height &&
+      e.y + e.height > player.y
+    ) {
+      triggerGameOver();
+      return;
+    }
+  }
+
+  // Dibujar jugador
   ctx.fillStyle = player.color;
   ctx.fillRect(player.x, player.y, player.width, player.height);
 
-  // === Dibujar balas ===
+  // Dibujar balas
   bullets.forEach((b) => {
     ctx.fillStyle = b.color;
     ctx.fillRect(b.x, b.y, b.width, b.height);
   });
 
-  // === Dibujar enemigos ===
+  // Dibujar enemigos
   enemies.forEach((e) => {
     ctx.fillStyle = e.color;
     ctx.fillRect(e.x, e.y, e.width, e.height);
