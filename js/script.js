@@ -6,9 +6,11 @@ const ctx = canvas.getContext("2d");
 
 const startScreen = document.getElementById("startScreen");
 const gameOverScreen = document.getElementById("gameOverScreen");
+const scoreDisplay = document.getElementById("scoreDisplay");
 
 let gameStarted = false;
 let gameOver = false;
+let score = 0;
 
 let frame = 0;
 let keys = {};
@@ -34,7 +36,7 @@ const player = {
   width: 40,
   height: 20,
   color: "#00ff88",
-  speed: 6, // Velocidad fija del jugador
+  speed: 6, // velocidad fija
 };
 
 // =====================
@@ -46,7 +48,6 @@ window.addEventListener("keydown", (e) => {
   if (!gameStarted && !gameOver && e.code === "Enter") startGame();
   else if (gameOver && e.code === "Enter") backToStart();
 });
-
 window.addEventListener("keyup", (e) => (keys[e.code] = false));
 
 // =====================
@@ -55,8 +56,11 @@ window.addEventListener("keyup", (e) => (keys[e.code] = false));
 function startGame() {
   startScreen.classList.add("hidden");
   gameOverScreen.classList.add("hidden");
+  scoreDisplay.classList.remove("hidden"); // mostrar puntuación
+
   gameStarted = true;
   gameOver = false;
+  score = 0; // reset score
 
   frame = 0;
   startTime = performance.now();
@@ -71,6 +75,7 @@ function startGame() {
 function triggerGameOver() {
   gameStarted = false;
   gameOver = true;
+  scoreDisplay.classList.add("hidden"); // ocultar puntuación
   gameOverScreen.classList.remove("hidden");
 }
 
@@ -78,6 +83,8 @@ function backToStart() {
   gameOver = false;
   startScreen.classList.remove("hidden");
   gameOverScreen.classList.add("hidden");
+  score = 0; // reiniciar puntuación
+  updateScore();
 }
 
 // =====================
@@ -99,7 +106,7 @@ function createEnemy() {
     width: 30,
     height: 20,
     color: "#ff3333",
-    baseSpeed: 1.5 + Math.random(), // velocidad base
+    baseSpeed: 1.5 + Math.random(),
   });
 }
 
@@ -112,6 +119,13 @@ function shoot() {
     color: "#00ffcc",
     speed: 8,
   });
+}
+
+// =====================
+// SCORE SYSTEM
+// =====================
+function updateScore() {
+  scoreDisplay.textContent = `Score: ${score}`;
 }
 
 // =====================
@@ -143,10 +157,10 @@ function update() {
   bullets.forEach((b) => (b.y -= b.speed));
   bullets = bullets.filter((b) => b.y > -b.height);
 
-  // Crear enemigos (uno cada 120 frames ≈ 2s)
+  // Crear enemigos (cada 120 frames ≈ 2 segundos)
   if (frame % 120 === 0) createEnemy();
 
-  // Enemigos se aceleran progresivamente con el tiempo
+  // Enemigos aceleran con el tiempo
   const elapsed = (performance.now() - startTime) / 1000;
   const enemySpeedMultiplier = 1 + elapsed * 0.04;
   enemies.forEach((e) => (e.y += e.baseSpeed * enemySpeedMultiplier));
@@ -162,6 +176,8 @@ function update() {
       ) {
         e.hit = true;
         b.remove = true;
+        score += 100; // +100 puntos por enemigo
+        updateScore();
       }
     });
   });

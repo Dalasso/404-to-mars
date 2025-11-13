@@ -58,3 +58,25 @@ canvas {
   height: 100vh;
   background: radial-gradient(circle at 50% 20%, #001100, #000);
 }
+
+/* ===== SCORE DISPLAY ===== */
+#scoreDisplay {
+  position: fixed;
+  top: 20px;
+  right: 30px;
+  font-size: 1.2rem;
+  font-family: "Space Mono", monospace;
+  color: #00ff88;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #00ff88;
+  box-shadow: 0 0 8px #00ff88;
+  z-index: 9;
+  transition: opacity 0.3s ease;
+}
+
+#scoreDisplay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
