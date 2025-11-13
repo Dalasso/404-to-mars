@@ -77,6 +77,12 @@ function triggerGameOver() {
   gameOver = true;
   scoreDisplay.classList.add("hidden"); // ocultar puntuación
   gameOverScreen.classList.remove("hidden");
+
+  // Resetear y reiniciar animación typewriter
+  resetTypewriter();
+  setTimeout(() => {
+    initTypewriter();
+  }, 100);
 }
 
 function backToStart() {
@@ -85,6 +91,12 @@ function backToStart() {
   gameOverScreen.classList.add("hidden");
   score = 0; // reiniciar puntuación
   updateScore();
+
+  // Resetear y reiniciar animación typewriter
+  resetTypewriter();
+  setTimeout(() => {
+    initTypewriter();
+  }, 100);
 }
 
 // =====================
@@ -216,3 +228,73 @@ function update() {
 
   requestAnimationFrame(update);
 }
+
+// =====================
+// TYPEWRITER ANIMATION
+// =====================
+function initTypewriter() {
+  const typewriterLines = document.querySelectorAll(".typewriter-line");
+  const loadingDots = document.querySelectorAll(".loading-dots");
+
+  // Procesar líneas de typewriter normal
+  typewriterLines.forEach((line) => {
+    // Calcular el ancho exacto del texto
+    const tempSpan = document.createElement("span");
+    tempSpan.style.visibility = "hidden";
+    tempSpan.style.position = "absolute";
+    tempSpan.style.whiteSpace = "nowrap";
+    tempSpan.style.fontSize = window.getComputedStyle(line).fontSize;
+    tempSpan.style.fontFamily = window.getComputedStyle(line).fontFamily;
+    tempSpan.innerHTML = line.innerHTML;
+    document.body.appendChild(tempSpan);
+
+    const textWidth = tempSpan.offsetWidth;
+    document.body.removeChild(tempSpan);
+
+    // Aplicar el ancho exacto como variable CSS
+    line.style.setProperty("--text-width", textWidth + "px");
+
+    // Obtener el delay desde el atributo data-delay
+    const delay = parseInt(line.getAttribute("data-delay")) || 2000;
+
+    // Iniciar animación después del delay
+    setTimeout(() => {
+      line.classList.add("active");
+
+      // Terminar animación después de 3s
+      setTimeout(() => {
+        line.classList.remove("active");
+        line.classList.add("finished");
+      }, 3000);
+    }, delay);
+  });
+
+  // Procesar puntos de carga
+  loadingDots.forEach((dots) => {
+    const delay = parseInt(dots.getAttribute("data-delay")) || 2000;
+
+    setTimeout(() => {
+      dots.classList.add("active");
+    }, delay);
+  });
+}
+
+// Función para resetear animaciones
+function resetTypewriter() {
+  const typewriterLines = document.querySelectorAll(".typewriter-line");
+  const loadingDots = document.querySelectorAll(".loading-dots");
+
+  typewriterLines.forEach((line) => {
+    line.classList.remove("active", "finished");
+    line.style.removeProperty("--text-width");
+  });
+
+  loadingDots.forEach((dots) => {
+    dots.classList.remove("active");
+  });
+}
+
+// Inicializar cuando se carga la página
+document.addEventListener("DOMContentLoaded", () => {
+  initTypewriter();
+});

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>404 — Perdido en el Espacio</title>
+    <title>404 - Mars not found</title>
     <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body>
@@ -14,25 +14,41 @@
     <div id="crtContainer" class="crt-container init-animation">
       <!-- Distortion effect that follows the scan line -->
       <div class="content"></div>
-      <!-- Pantalla inicial -->
+      <!-- Initial screen -->
       <div class="overlay" id="startScreen">
         <h1 class="title404">
           ERROR
           <div>404</div>
         </h1>
-        <p class="subtitle">
-          Has sido lanzado al espacio...<br />
-          Pulsa <strong>ENTER</strong> para iniciar la misión
-        </p>
+        <div class="subtitle-container">
+          <p class="subtitle typewriter-line" data-delay="2000">
+            Mars not found...
+          </p>
+          <p class="subtitle typewriter-line" data-delay="5500">
+            Major Tom press <strong>ENTER</strong> to play for your last minutes
+          </p>
+          <p class="subtitle loading-dots" data-delay="8500">
+            <span class="dot">.</span><span class="dot">.</span
+            ><span class="dot">.</span>
+          </p>
+        </div>
       </div>
 
       <!-- Pantalla de Game Over -->
       <div class="overlay hidden" id="gameOverScreen">
         <h1 class="title404">GAME OVER</h1>
-        <p class="subtitle">
-          Tu nave ha sido destruida.<br />
-          Pulsa <strong>ENTER</strong> para volver al inicio.
-        </p>
+        <div class="subtitle-container">
+          <p class="subtitle typewriter-line" data-delay="500">
+            You can always play again...
+          </p>
+          <p class="subtitle typewriter-line" data-delay="4000">
+            Press <strong>ENTER</strong> to restart.
+          </p>
+          <p class="subtitle loading-dots" data-delay="7000">
+            <span class="dot">.</span><span class="dot">.</span
+            ><span class="dot">.</span>
+          </p>
+        </div>
       </div>
 
       <canvas id="gameCanvas"></canvas>
