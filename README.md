@@ -1,10 +1,10 @@
-# 🚀 404 – Mars Not Found
+# 404 – Mars Not Found
 
 Este proyecto consiste en una página de error 404 personalizada con una temática espacial. La idea es que un astronauta (Major Tom) intenta aterrizar en Marte, pero las comunicaciones fallan y aparece un mensaje “**404 – Mars not found**”.  
-Como último entretenimiento antes de perder contacto, la interfaz muestra un minijuego inspirado en el dinosaurio de Google.
+Como último entretenimiento antes de perder contacto, la interfaz muestra un minijuego inspirado en el dinosaurio de Google, Space invaders y los shooter vertical scroll.
 
 El proyecto incluye:
-- Pantalla de inicio.
+- Pantalla de inicio / Error 404.
 - Minijuego programado en JavaScript dentro de un `<canvas>`.
 - Pantalla final de **Game Over**.
 - Animaciones y efectos visuales estilo monitor antiguo (CRT).
@@ -20,10 +20,10 @@ Muestra el mensaje de error 404 y la pequeña historia de Major Tom usando efect
 Al pulsar **ENTER**, comienza el juego.
 
 # 2. **Juego (canvas)**
-Aquí aparece el minijuego tipo *runner*:
+Aquí aparece el minijuego tipo *runner* o *shooter vertical scroll*:
 - El jugador controla una nave que se mueve horizontalmente.
 - Puede disparar pulsando **Space**.
-- Caen enemigos desde la parte superior.
+- Caen enemigos / asteroides desde la parte superior.
 - El marcador de puntuación va aumentando al destruirlos.
 
 # 3. **Pantalla de Game Over**
