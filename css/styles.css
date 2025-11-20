@@ -45,6 +45,7 @@ body {
   text-shadow: 0 0 15px var(--accent);
   margin: 0;
   line-height: 0.8;
+  font-family: 'Share Tech', monospace; /* Use the imported Share Tech font for H1 */
 }
 
 .subtitle-container {
@@ -65,6 +66,7 @@ body {
   display: block;
   border-right: 2px solid transparent;
   max-width: fit-content;
+  font-family: 'Share Tech', monospace;
 }
 
 .subtitle.typewriter-line.active {
@@ -157,7 +159,7 @@ canvas {
   top: 20px;
   right: 30px;
   font-size: 1.2rem;
-  font-family: "Space Mono", monospace;
+  font-family: 'Share Tech', monospace;
   color: rgb(255, 81, 0);
   background: rgba(0, 0, 0, 0.6);
   padding: 8px 16px;
